@@ -1,0 +1,9 @@
+fazer um vetor parent:
+no vetor parent, colocar como negativo o valor se a aresta for contrária. e depois verificar somente na hora de
+percorrer o vetor, pra saber se o custo da aresta deve ser subtraido ou somado.
+
+fazer um vetor de distancias:
+
+definir classe para arestas:
+sabendo que o vetor de parents tem o sinal da aresta, é possivel buscar diretamente pela aresta certa, 
+pois se ele for negativo quer dizer que o arco nao estava no sentido da arvore.
