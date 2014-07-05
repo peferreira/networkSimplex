@@ -19,7 +19,7 @@ private:
 	void dfsR(int);
 
 public:
-	Graph(int);
+	Graph();
 	virtual ~Graph();
 	void insertA(int,int);
 	void removeA(int,int);
@@ -27,6 +27,7 @@ public:
 	bool existArc(int,int);
 	int numArc(){return numA;}
 	void graphDFS();
+	void init(int numV);
 };
 
 #endif /* GRAPH_H_ */

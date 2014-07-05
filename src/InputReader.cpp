@@ -17,23 +17,45 @@ InputReader::~InputReader() {
 
 }
 
+char InputReader::getAlphanum(){
+	char c, value;
+	if (myfile.is_open()) {
+		while (myfile.good()) {
+			c = myfile.get();
 
+			if (isalnum(c)) {
+				value = c;
+				return value;
+			}
+		}
+	}
+	return '\0';
+}
 
-int InputReader::loadFile(){
+int InputReader::loadFile(Graph *G) {
+
 	string line;
-	if(myfile.is_open()){
-		char c = myfile.get();
-
-		while( myfile.good()){
-    		if(isalnum(c)){
-    		cout << c;
-    		}
-    		c = myfile.get();
-
-    	}
-    	myfile.close();
-    	return 1;
-    }
-    else cout << "Unable to openfile";
-    return 0;
+	if(myfile.is_open()) {
+		int V,quantProd, vIni,vFim,x,y,c;
+		myfile>>V;
+		myfile>>vIni;
+		myfile>>vFim;
+		myfile>>quantProd;
+		cout << V << '\n';
+		cout << vIni << '\n';
+		cout << vFim << '\n';
+		cout << quantProd << '\n';
+		G->init(V);
+		while(myfile.good()) {
+			myfile>>x;
+			myfile>>y;
+			myfile>>c;
+			cout << x << ' ' << y  << ' ' << c << '\n';
+			G->insertA(x,y);
+		}
+		myfile.close();
+		return 1;
+	}
+	else cout << "Unable to openfile";
+	return 0;
 }

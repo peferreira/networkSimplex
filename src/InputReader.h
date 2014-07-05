@@ -11,6 +11,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include "Graph.h"
 using namespace std;
 
 class InputReader {
@@ -20,7 +21,8 @@ class InputReader {
 public:
 	InputReader();
 	virtual ~InputReader();
-	int loadFile();
+	int loadFile(Graph *G);
+	char getAlphanum();
 };
 
 

@@ -7,15 +7,23 @@
 
 #include "Graph.h"
 #include <iostream>
-Graph::Graph(int V) {
-	numV = V;
+Graph::Graph() {
+	conta = 0;
+	numV = 0;
 	numA = 0;
-	matrixADJ = new list<int> [V];
-	pre = new int[V];
+	pre = NULL;
+	matrixADJ = NULL;
 }
 
 Graph::~Graph() {
 	// TODO Auto-generated destructor stub
+}
+
+void Graph::init(int V){
+	conta = 0;
+	numV = V;
+	matrixADJ = new list<int> [V];
+	pre = new int[V];
 }
 
 void Graph::insertA(int x, int y) {
