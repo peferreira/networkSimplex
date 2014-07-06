@@ -36,22 +36,22 @@ int InputReader::loadFile(Graph *G) {
 
 	string line;
 	if(myfile.is_open()) {
-		int V,quantProd, vIni,vFim,x,y,c;
+		int V,quantProdEscoado, vIni,vFim,x,y,c;
 		myfile>>V;
 		myfile>>vIni;
 		myfile>>vFim;
-		myfile>>quantProd;
+		myfile>>quantProdEscoado;
 		//cout << V << '\n';
 		//cout << vIni << '\n';
 		//cout << vFim << '\n';
 		//cout << quantProd << '\n';
-		G->init(V);
+		G->init(V,vIni,vFim,quantProdEscoado);
 		while(myfile.good()) {
 			myfile>>x;
 			myfile>>y;
 			myfile>>c;
 			//cout << x << ' ' << y  << ' ' << c << '\n';
-			G->insertArc(false,x,y,1);
+			G->insertArc(false,x,y,c);
 
 		}
 		myfile.close();

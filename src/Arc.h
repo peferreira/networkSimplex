@@ -12,12 +12,18 @@ class Arc {
 private:
 	int value;
 	int v, w;
-	int fake;
+	bool fake;
+	bool artificial;
 public:
 	Arc(bool, int, int, int);
+	Arc(bool, int, int, int, bool);
+
 	virtual ~Arc();
 	int getV(){return v;}
 	int getW(){return w;}
+	bool isArtificial(){return artificial;}
+	bool isFake(){return fake;}
+	void setArtificial(bool isArtificial){artificial = isArtificial;};
 };
 
 #endif /* ARC_H_ */

@@ -12,6 +12,15 @@ Arc::Arc(bool fake, int v, int w, int value) {
 	this->v = v;
 	this->w = w;
 	this->value = value;
+	artificial = false;
+}
+
+Arc::Arc(bool fake, int v, int w, int value, bool artificial) {
+	this->fake = fake;
+	this->v = v;
+	this->w = w;
+	this->value = value;
+	this->artificial = artificial;
 }
 
 Arc::~Arc() {

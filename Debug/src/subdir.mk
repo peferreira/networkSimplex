@@ -7,18 +7,21 @@ CPP_SRCS += \
 ../src/Arc.cpp \
 ../src/Graph.cpp \
 ../src/InputReader.cpp \
+../src/SimplexForNetworks.cpp \
 ../src/simplex_for_networks.cpp 
 
 OBJS += \
 ./src/Arc.o \
 ./src/Graph.o \
 ./src/InputReader.o \
+./src/SimplexForNetworks.o \
 ./src/simplex_for_networks.o 
 
 CPP_DEPS += \
 ./src/Arc.d \
 ./src/Graph.d \
 ./src/InputReader.d \
+./src/SimplexForNetworks.d \
 ./src/simplex_for_networks.d 
 
 
