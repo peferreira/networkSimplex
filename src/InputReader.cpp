@@ -41,17 +41,18 @@ int InputReader::loadFile(Graph *G) {
 		myfile>>vIni;
 		myfile>>vFim;
 		myfile>>quantProd;
-		cout << V << '\n';
-		cout << vIni << '\n';
-		cout << vFim << '\n';
-		cout << quantProd << '\n';
+		//cout << V << '\n';
+		//cout << vIni << '\n';
+		//cout << vFim << '\n';
+		//cout << quantProd << '\n';
 		G->init(V);
 		while(myfile.good()) {
 			myfile>>x;
 			myfile>>y;
 			myfile>>c;
-			cout << x << ' ' << y  << ' ' << c << '\n';
-			G->insertA(x,y);
+			//cout << x << ' ' << y  << ' ' << c << '\n';
+			G->insertArc(false,x,y,1);
+
 		}
 		myfile.close();
 		return 1;

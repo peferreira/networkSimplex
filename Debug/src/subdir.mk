@@ -4,19 +4,19 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/Edge.cpp \
+../src/Arc.cpp \
 ../src/Graph.cpp \
 ../src/InputReader.cpp \
 ../src/simplex_for_networks.cpp 
 
 OBJS += \
-./src/Edge.o \
+./src/Arc.o \
 ./src/Graph.o \
 ./src/InputReader.o \
 ./src/simplex_for_networks.o 
 
 CPP_DEPS += \
-./src/Edge.d \
+./src/Arc.d \
 ./src/Graph.d \
 ./src/InputReader.d \
 ./src/simplex_for_networks.d 
