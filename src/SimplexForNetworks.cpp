@@ -57,6 +57,26 @@ Graph SimplexForNetworks::addArtificialArcs(Graph G) {
 	 clone.printArcDetails();*/
 }
 
+Arc SimplexForNetworks::findEnteringArc(Graph T){
+	int *y = T.getYArray();
+	Arc *a = NULL;
+	int i;
+	list<Arc>::iterator it;
+	for(i = 0; i < T.getNumV();i++){
+		for(it = T.getBegin(i); it != T.getEnd(i); it++){
+			if(!(it->isArtificial()) && !(it->isFake())){
+				if((y[i] + it->getValue()) < y[it->getW()]){
+					return *it;
+					//cout << "v:" << it->getV() << " w:" << it->getW() << '|';
+
+				}
+			}
+		}
+	}
+	return *a;
+}
+
+
 /*supoe x > y, h1 > h2*/
 int SimplexForNetworks::findCycle(int v, int w, Graph T) {
 	int *parent = T.getParent();

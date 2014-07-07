@@ -20,6 +20,7 @@ public:
 	void Initialization(Graph G);
 	Graph addArtificialArcs(Graph G);
 	int findCycle(int v, int w, Graph T);
+	Arc findEnteringArc(Graph T);
 };
 
 #endif /* SIMPLEXFORNETWORKS_H_ */
