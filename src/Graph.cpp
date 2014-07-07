@@ -19,6 +19,7 @@ Graph::Graph() {
 	altura = NULL;
 	parent = NULL;
 	x = NULL;
+	y = NULL;
 }
 
 Graph::~Graph() {
@@ -37,8 +38,9 @@ void Graph::init(int V, int ini, int end, int produtoEscoado) {
 	x = new int[V];
 	parent = new int[V];
 	altura = new int[V];
+	y = new int[V];
 	for (i = 0; i < V; i++) {
-		x[i] = parent[i] = altura[i] = pre[i] = 0;
+		y[i] = x[i] = parent[i] = altura[i] = pre[i] = 0;
 	}
 
 }
@@ -122,10 +124,14 @@ void Graph::dfsR(int v) {
 	pre[v] = conta++;
 	for (it = matrixADJ[v].begin(); it != matrixADJ[v].end(); it++) {
 		if (pre[it->getW()] == -1) {
-			if(it->isFake())
+			if (it->isFake()) {
 				x[it->getW()] = it->getValue();
-			else
-				x[it->getW()] = -1*it->getValue();
+				y[it->getW()] = y[v] - it->getValue();
+			} else {
+				x[it->getW()] = -1 * it->getValue();
+				y[it->getW()] = y[v] + it->getValue();
+
+			}
 			parent[it->getW()] = v;
 			altura[it->getW()] = altura[v] + 1;
 			dfsR(it->getW());

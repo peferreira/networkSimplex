@@ -18,6 +18,7 @@ private:
 	int *parent;
 	int *altura;
 	int *x;
+	int *y;
 	int numV;
 	int numA;
 	int ini, end;
@@ -42,6 +43,7 @@ public:
 	int *getAlturaArray(){return altura;}
 	int *getXArray(){return x;}
 	int *getPre(){return pre;}
+	int *getYArray(){return y;}
 	void setParent(int *newParent){parent = newParent;}
 	int getAltura(int i){return altura[i];}
 	void setAltura(int *newAltura){altura = newAltura;}
