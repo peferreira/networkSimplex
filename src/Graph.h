@@ -17,6 +17,7 @@ private:
 	int *pre;
 	int *parent;
 	int *altura;
+	int *x;
 	int numV;
 	int numA;
 	int ini, end;
@@ -39,12 +40,15 @@ public:
 	void init(int numVertices , int vInicial, int vFinal, int prodEscoado);
 	int *getParent(){return parent;}
 	int *getAlturaArray(){return altura;}
-
+	int *getXArray(){return x;}
+	int *getPre(){return pre;}
 	void setParent(int *newParent){parent = newParent;}
 	int getAltura(int i){return altura[i];}
 	void setAltura(int *newAltura){altura = newAltura;}
 
 	list<Arc>::iterator getEnd(int x){return matrixADJ[x].end();};
+	list<Arc>::iterator getBegin(int x){return matrixADJ[x].begin();};
+
 	int getNumV(){return numV;}
 	int getInitialVertex(){return ini;};
 	int getFinishVertex(){return end;}

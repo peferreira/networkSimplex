@@ -18,6 +18,7 @@ Graph::Graph() {
 	matrixADJ = NULL;
 	altura = NULL;
 	parent = NULL;
+	x = NULL;
 }
 
 Graph::~Graph() {
@@ -33,10 +34,11 @@ void Graph::init(int V, int ini, int end, int produtoEscoado) {
 	numV = V;
 	matrixADJ = new list<Arc> [V];
 	pre = new int[V];
+	x = new int[V];
 	parent = new int[V];
 	altura = new int[V];
 	for (i = 0; i < V; i++) {
-		parent[i] = altura[i] = pre[i] = 0;
+		x[i] = parent[i] = altura[i] = pre[i] = 0;
 	}
 
 }
@@ -114,12 +116,16 @@ void Graph::printArcDetails() {
 
 	}
 }
-
+/*aresta fake recebe valor positivo em x, aresta nao fake recebe valor negativo*/
 void Graph::dfsR(int v) {
 	list<Arc>::iterator it;
 	pre[v] = conta++;
 	for (it = matrixADJ[v].begin(); it != matrixADJ[v].end(); it++) {
 		if (pre[it->getW()] == -1) {
+			if(it->isFake())
+				x[it->getW()] = it->getValue();
+			else
+				x[it->getW()] = -1*it->getValue();
 			parent[it->getW()] = v;
 			altura[it->getW()] = altura[v] + 1;
 			dfsR(it->getW());

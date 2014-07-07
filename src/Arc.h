@@ -24,6 +24,7 @@ public:
 	bool isArtificial(){return artificial;}
 	bool isFake(){return fake;}
 	void setArtificial(bool isArtificial){artificial = isArtificial;};
+	int getValue(){return value;}
 };
 
 #endif /* ARC_H_ */
