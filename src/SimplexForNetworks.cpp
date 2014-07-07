@@ -6,7 +6,7 @@
  */
 #include <iostream>
 #include "SimplexForNetworks.h"
-
+#include <list>
 SimplexForNetworks::SimplexForNetworks() {
 	// TODO Auto-generated constructor stub
 
@@ -60,6 +60,11 @@ Graph SimplexForNetworks::addArtificialArcs(Graph G) {
 /*supoe x > y, h1 > h2*/
 int SimplexForNetworks::findCycle(int v, int w, Graph T) {
 	int *parent = T.getParent();
+	int limitator = T.getProdEscoado();
+	list<int> A;
+	list<int> B;
+	list<int>::iterator it;
+
 	int h1, h2, temp, x, y;
 	h1 = T.getAltura(v);
 	h2 = T.getAltura(w);
@@ -74,15 +79,72 @@ int SimplexForNetworks::findCycle(int v, int w, Graph T) {
 		y = v;
 	}
 	while (h1 != h2) {
+		A.push_back(x);
 		x = parent[x];
 		h1 = T.getAltura(x);
 
 	}
 	while (x != y) {
+		A.push_back(x);
+		B.push_front(y);
 		x = parent[x];
 		y = parent[y];
-
 	}
-	return x;
+	limitator = findLimitator(A, B, v, w, T);
+
+	/*A.push_back(x);
+	 A.splice(A.end(),B);
+	 for(it = A.begin(); it != A.end(); it++){
+	 cout << *it << " ";
+	 }*/
+	return limitator;
 }
 
+int SimplexForNetworks::findLimitator(list<int> A, list<int> B, int v, int w,
+		Graph T) {
+	int *xArray = T.getXArray();
+	list<int>::iterator it;
+	int z = -1;
+	int limitador = T.getProdEscoado();
+	if (v == *A.begin()) {
+		for (it = A.begin(); it != A.end(); it++) {
+			if (xArray[*it] >= 0) {
+				if ((xArray[*it]) < limitador) {
+					limitador = xArray[*it];
+					z = *it;
+				}
+			}
+		}
+		for (it = B.begin(); it != B.end(); it++) {
+			if (xArray[*it] <= 0) {
+				if ((-1 * xArray[*it]) < limitador) {
+					limitador = -1 * xArray[*it];
+					z = *it;
+
+				}
+			}
+		}
+	} else {
+		for (it = B.begin(); it != B.end(); it++) {
+			if (xArray[*it] >= 0) {
+				if ((xArray[*it]) < limitador) {
+					limitador = xArray[*it];
+					z = *it;
+
+				}
+			}
+		}
+		for (it = A.begin(); it != A.end(); it++) {
+			if (xArray[*it] <= 0) {
+				if ((-1 * xArray[*it]) < limitador) {
+					limitador = -1 * xArray[*it];
+					z = *it;
+
+				}
+			}
+		}
+	}
+	//cout << z << '\n';
+	return limitador;
+
+}

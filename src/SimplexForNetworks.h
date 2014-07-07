@@ -10,6 +10,9 @@
 #include "Graph.h"
 
 class SimplexForNetworks {
+private:
+	int findLimitator(list<int> a, list<int> b, int v, int w, Graph T);
+
 public:
 	SimplexForNetworks();
 	virtual ~SimplexForNetworks();
