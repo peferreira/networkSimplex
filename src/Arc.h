@@ -10,21 +10,24 @@
 
 class Arc {
 private:
-	int value;
+	int custo_aresta;
+	int valueX;
 	int v, w;
 	bool fake;
 	bool artificial;
 public:
-	Arc(bool, int, int, int);
-	Arc(bool, int, int, int, bool);
-
+	Arc(bool fake, int v, int w,  	int custo_aresta);
+	Arc(bool fake, int v, int w, int custo_aresta, int valueX ,bool artificial);
 	virtual ~Arc();
 	int getV(){return v;}
 	int getW(){return w;}
 	bool isArtificial(){return artificial;}
 	bool isFake(){return fake;}
 	void setArtificial(bool isArtificial){artificial = isArtificial;};
-	int getValue(){return value;}
+	/*int getValue(){return value;}*/
+	int getCusto(){return custo_aresta;}
+	int getValueX(){return valueX;}
+	void setValueX(int valueX){this->valueX = valueX;}
 };
 
 #endif /* ARC_H_ */

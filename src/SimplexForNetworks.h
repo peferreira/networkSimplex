@@ -17,10 +17,12 @@ public:
 	SimplexForNetworks();
 	virtual ~SimplexForNetworks();
 	void NetworkSimplex(Graph G);
-	void Initialization(Graph G);
+	Graph Initialization(Graph G);
 	Graph addArtificialArcs(Graph G);
 	int findCycle(int v, int w, Graph T);
-	Arc findEnteringArc(Graph T);
+	Arc findEnteringArc(Graph T, Graph tree);
+	void updateXArray(list<int> A, list<int> B, int v, int w,Graph T,int limitator);
+	void printListInt(list<int> L);
 };
 
 #endif /* SIMPLEXFORNETWORKS_H_ */

@@ -7,19 +7,21 @@
 
 #include "Arc.h"
 
-Arc::Arc(bool fake, int v, int w, int value) {
+Arc::Arc(bool fake, int v, int w, int custo) {
 	this->fake = fake;
 	this->v = v;
 	this->w = w;
-	this->value = value;
+	this->valueX = 0 ;
+	this->custo_aresta = custo;
 	artificial = false;
 }
 
-Arc::Arc(bool fake, int v, int w, int value, bool artificial) {
+Arc::Arc(bool fake, int v, int w, int custo,int valueX, bool artificial) {
 	this->fake = fake;
 	this->v = v;
 	this->w = w;
-	this->value = value;
+	this->valueX = valueX;
+	this->custo_aresta = custo;
 	this->artificial = artificial;
 }
 

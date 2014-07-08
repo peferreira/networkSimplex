@@ -45,11 +45,12 @@ void Graph::init(int V, int ini, int end, int produtoEscoado) {
 
 }
 
-void Graph::insertA(bool fake, int x, int y, int value, bool artificial) {
+void Graph::insertA(bool fake, int x, int y, int custo_aresta, int valueX,
+		bool artificial) {
 	list<Arc>::iterator it = existArc(x, y);
 	Arc *new_arc;
 	if (it == matrixADJ[x].end()) {
-		new_arc = new Arc(fake, x, y, value, artificial);
+		new_arc = new Arc(fake, x, y, custo_aresta, valueX, artificial);
 		matrixADJ[x].push_back(*new_arc);
 		(this->numA)++;
 	}
@@ -68,12 +69,13 @@ void Graph::removeArc(int x, int y) {
 	removeA(y, x);
 }
 void Graph::insertArc(bool fake, int x, int y, int value) {
-	insertA(fake, x, y, value, false);
-	insertA(!fake, y, x, value, false);
+	insertA(fake, x, y, value, 0, false);
+	insertA(!fake, y, x, value, 0, false);
 }
-void Graph::insertArtificialArc(bool fake, int x, int y, int value) {
-	insertA(fake, x, y, value, true);
-	insertA(!fake, y, x, value, true);
+void Graph::insertArtificialArc(bool fake, int x, int y, int valueX,
+		int custo_aresta) {
+	insertA(fake, x, y, custo_aresta, valueX, true);
+	insertA(!fake, y, x, custo_aresta, valueX, true);
 }
 
 list<Arc>::iterator Graph::existArc(int v, int w) {
@@ -89,6 +91,20 @@ list<Arc>::iterator Graph::existArc(int v, int w) {
 		it++;
 	}
 	return it;
+}
+bool Graph::existArc2(int v, int w) {
+	int numV = getNumV();
+	if (v > numV || w > numV) {
+		cout << "vertice acessado é inexistente";
+	}
+	list<Arc>::iterator it = matrixADJ[v].begin();
+	while (it != matrixADJ[v].end()) {
+		if (it->getW() == w) {
+			return true;
+		};
+		it++;
+	}
+	return false;
 }
 
 void Graph::printMatrixADJ() {
@@ -125,11 +141,11 @@ void Graph::dfsR(int v) {
 	for (it = matrixADJ[v].begin(); it != matrixADJ[v].end(); it++) {
 		if (pre[it->getW()] == -1) {
 			if (it->isFake()) {
-				x[it->getW()] = it->getValue();
-				y[it->getW()] = y[v] - it->getValue();
+				x[it->getW()] = it->getCusto();
+				y[it->getW()] = y[v] - it->getCusto();
 			} else {
-				x[it->getW()] = -1 * it->getValue();
-				y[it->getW()] = y[v] + it->getValue();
+				x[it->getW()] = -1 * it->getCusto();
+				y[it->getW()] = y[v] + it->getCusto();
 
 			}
 			parent[it->getW()] = v;
@@ -166,7 +182,7 @@ Graph Graph::clone() {
 
 	for (i = 0; i < numV; i++) {
 		for (it = matrixADJ[i].begin(); it != matrixADJ[i].end(); it++) {
-			new_graph.insertA(it->isFake(), i, it->getW(), 0, false);
+			new_graph.insertA(it->isFake(), i, it->getW(), 0, 0, false);
 		}
 		new_graph.parent[i] = parent[i];
 		new_graph.altura[i] = altura[i];
@@ -175,3 +191,41 @@ Graph Graph::clone() {
 
 	return new_graph;
 }
+
+Graph Graph::montaEstruturaArvore() {
+	int i = 0;
+	int numV;
+	list<Arc>::iterator it;
+	numV = getNumV();
+	Graph new_graph;
+	new_graph.init(numV, getInitialVertex(), getFinishVertex(),
+			getProdEscoado());
+
+	for (i = 0; i < numV; i++) {
+		for (it = matrixADJ[i].begin(); it != matrixADJ[i].end(); it++) {
+
+				if ((it->getV() == 0)) {
+					new_graph.insertA(false, i, it->getW(), 0,
+							it->getValueX(), false);
+					new_graph.insertA(true, it->getW(), i, 0,
+							it->getValueX(), false);
+				} else if (it->getW() == 0) {
+					new_graph.insertA(true, i, it->getW(),0,
+							it->getValueX(), false);
+					new_graph.insertA(false, it->getW(), i,0,
+							it->getValueX(), false);
+				}
+
+		}
+		if (i != 0) {
+			new_graph.insertA(true, i, 0, 1,
+						it->getValueX(), true);
+			new_graph.insertA(false, 0, i, 1,
+											it->getValueX(), true);
+		}
+	}
+	new_graph.printArcDetails();
+	new_graph.printMatrixADJ();
+	return new_graph;
+}
+
