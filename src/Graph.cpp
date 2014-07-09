@@ -20,6 +20,7 @@ Graph::Graph() {
 	parent = NULL;
 	x = NULL;
 	y = NULL;
+	d = NULL;
 }
 
 Graph::~Graph() {
@@ -35,12 +36,15 @@ void Graph::init(int V, int ini, int end, int produtoEscoado) {
 	numV = V;
 	matrixADJ = new list<Arc> [V];
 	pre = new int[V];
-	x = new int[V];
 	parent = new int[V];
 	altura = new int[V];
 	y = new int[V];
+	x = new int[V];
+	d = new int[V];
+	aux = new int[V];
+
 	for (i = 0; i < V; i++) {
-		y[i] = x[i] = parent[i] = altura[i] = pre[i] = 0;
+		aux[i] = d[i] = x[i] = y[i] = parent[i] = altura[i] = pre[i] = 0;
 	}
 
 }
@@ -134,19 +138,19 @@ void Graph::printArcDetails() {
 
 	}
 }
-/*aresta fake recebe valor positivo em x, aresta nao fake recebe valor negativo*/
+
 void Graph::dfsR(int v) {
 	list<Arc>::iterator it;
 	pre[v] = conta++;
 	for (it = matrixADJ[v].begin(); it != matrixADJ[v].end(); it++) {
 		if (pre[it->getW()] == -1) {
 			if (it->isFake()) {
-				x[it->getW()] = it->getCusto();
+				d[it->getW()] = -1;
 				y[it->getW()] = y[v] - it->getCusto();
-			} else {
-				x[it->getW()] = -1 * it->getCusto();
-				y[it->getW()] = y[v] + it->getCusto();
 
+			} else {
+				d[it->getW()] = 1;
+				y[it->getW()] = y[v] + it->getCusto();
 			}
 			parent[it->getW()] = v;
 			altura[it->getW()] = altura[v] + 1;
@@ -162,15 +166,78 @@ void Graph::graphDFS() {
 		pre[v] = -1;
 		altura[v] = 0;
 		parent[v] = 0;
+		y[v] = 0;
+		d[v] = 0;
 	}
-	for (v = 0; v < numV; v++)
+	for (v = 0; v < numV; v++) {
 		if (pre[v] == -1) {
 			parent[v] = v;
 			altura[v] = 0;
 			dfsR(v);
 		}
+	}
+
 }
 
+/*aresta fake recebe valor positivo em x, aresta nao fake recebe valor negativo*/
+/*void Graph::dfsR(int v) {
+ list<Arc>::iterator it;
+ pre[v] = conta++;
+ for (it = matrixADJ[v].begin(); it != matrixADJ[v].end(); it++) {
+ if (pre[it->getW()] == -1) {
+ if (it->isFake()) {
+ if (ordemVertices[it->getW()] > 0) {
+ //x[ordemVertices[it->getW()]] = it->getCusto();
+ y[ordemVertices[it->getW()]] = y[ordemVertices[v]]
+ - it->getCusto();
+ } else {
+ //x[it->getW()] = it->getCusto();
+ y[it->getW()] = y[v] - it->getCusto();
+ }
+ } else {
+ if (ordemVertices[it->getW()] > 0) {
+ //x[ordemVertices[it->getW()]] = -1 * it->getCusto();
+ y[ordemVertices[it->getW()]] = y[ordemVertices[v]]
+ + it->getCusto();
+ } else {
+ //x[it->getW()] = -1 * it->getCusto();
+ y[it->getW()] = y[v] + it->getCusto();
+ }
+ }
+ if (ordemVertices[it->getW()] > 0) {
+ parent[ordemVertices[it->getW()]] = v;
+ altura[ordemVertices[it->getW()]] = altura[ordemVertices[v]]
+ + 1;
+ } else {
+ parent[it->getW()] = v;
+ altura[it->getW()] = altura[v] + 1;
+ }
+ dfsR(it->getW());
+ }
+ }
+ }
+ */
+/*void Graph::graphDFS() {
+ int v;
+ conta = 0;
+ for (v = 0; v < numV; v++) {
+ pre[v] = -1;
+ altura[v] = 0;
+ parent[v] = 0;
+ }
+ for (v = 0; v < numV; v++)
+ if (pre[v] == -1) {
+ if (ordemVertices[v] > 0) {
+ parent[ordemVertices[v]] = v;
+ altura[ordemVertices[v]] = 0;
+ } else {
+ parent[v] = v;
+ altura[v] = 0;
+ }
+ dfsR(v);
+ }
+ }
+ */
 Graph Graph::clone() {
 	int i = 0;
 	int numV;
@@ -204,24 +271,26 @@ Graph Graph::montaEstruturaArvore() {
 	for (i = 0; i < numV; i++) {
 		for (it = matrixADJ[i].begin(); it != matrixADJ[i].end(); it++) {
 
-				if ((it->getV() == 0)) {
-					new_graph.insertA(false, i, it->getW(), 0,
-							it->getValueX(), false);
-					new_graph.insertA(true, it->getW(), i, 0,
-							it->getValueX(), false);
-				} else if (it->getW() == 0) {
-					new_graph.insertA(true, i, it->getW(),0,
-							it->getValueX(), false);
-					new_graph.insertA(false, it->getW(), i,0,
-							it->getValueX(), false);
-				}
+			if ((it->getV() == 0)) {
+				new_graph.insertA(false, i, it->getW(), 0, it->getValueX(),
+						false);
+				new_graph.insertA(true, it->getW(), i, 0, it->getValueX(),
+						false);
+			} else if (it->getW() == 0) {
+				new_graph.insertA(true, i, it->getW(), 0, it->getValueX(),
+						false);
+				new_graph.insertA(false, it->getW(), i, 0, it->getValueX(),
+						false);
+			}
 
 		}
 		if (i != 0) {
-			new_graph.insertA(true, i, 0, 1,
-						it->getValueX(), true);
-			new_graph.insertA(false, 0, i, 1,
-											it->getValueX(), true);
+			new_graph.insertA(true, i, 0, 1, it->getValueX(), true);
+			new_graph.insertA(false, 0, i, 1, it->getValueX(), true);
+			if(y[i] > 0){
+				y[i] = y[0] + 1;
+			}
+
 		}
 	}
 	new_graph.printArcDetails();

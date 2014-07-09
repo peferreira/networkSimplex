@@ -18,8 +18,10 @@ private:
 	int *pre;
 	int *parent;
 	int *altura;
+	int *d;
 	int *x;
 	int *y;
+	int *aux;
 	int numV;
 	int numA;
 	int ini, end;
@@ -44,14 +46,17 @@ public:
 	void init(int numVertices , int vInicial, int vFinal, int prodEscoado);
 	int *getParent(){return parent;}
 	int *getAlturaArray(){return altura;}
+	int *getDArray(){return d;}
 	int *getXArray(){return x;}
 	int *getPre(){return pre;}
 	int *getYArray(){return y;}
 	void setParent(int *newParent){parent = newParent;}
 	int getAltura(int i){return altura[i];}
 	void setAltura(int *newAltura){altura = newAltura;}
+	void setDArray(int *dArray){ d = dArray ;}
 	void setXArray(int *xArray){ x = xArray ;}
 
+	bool isArcFake(int v, int w);
 	void setYArray(int *yArray){ y = yArray ;}
 
 

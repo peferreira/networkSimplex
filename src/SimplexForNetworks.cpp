@@ -23,10 +23,12 @@ Graph SimplexForNetworks::Initialization(Graph G) {
 	int *new_x_array = new int[G.getNumV()];
 	for (i = 0; i < G.getNumV(); i++) {
 		if (i == finishVertex) {
-			new_x_array[i] = -1 * G.getProdEscoado();
+			new_x_array[i] = G.getProdEscoado();
+
 		} else {
 			new_x_array[i] = 0;
 		}
+
 	}
 
 	G.setXArray(new_x_array);
@@ -95,7 +97,7 @@ Graph SimplexForNetworks::addArtificialArcs(Graph G) {
 
 Arc SimplexForNetworks::findEnteringArc(Graph tree, Graph T) {
 	int *y = tree.getYArray();
-	Arc *a = NULL;
+	Arc *a = new Arc(true,-1,-1,-1);
 	int i;
 	list<Arc>::iterator it;
 	for (i = 0; i < T.getNumV(); i++) {
@@ -120,15 +122,19 @@ int SimplexForNetworks::findCycle(int v, int w, Graph T) {
 	int verticeLimitador = v;
 	int h1, h2, temp, x, y;
 	int *xArray = T.getXArray();
+	int *d = T.getDArray();
 	h1 = T.getAltura(v);
 	h2 = T.getAltura(w);
-	x = w;
-	y = v;
-
+	x = v;
+	y = w;
+	list<int> A;
+	list<int> B;
+	list<int>::iterator it;
 	while (h1 > h2) {
-		if (xArray[x] < 0) {
-			if (-1 * xArray[x] <= limitator) {
-				limitator = -1 * xArray[x];
+		A.push_back(x);
+		if (d[x] < 0) {
+			if (xArray[x] <= limitator) {
+				limitator = xArray[x];
 				verticeLimitador = x;
 			}
 		}
@@ -136,9 +142,10 @@ int SimplexForNetworks::findCycle(int v, int w, Graph T) {
 		h1 = T.getAltura(x);
 	}
 	while (h2 > h1) {
-		if (xArray[y] > 0) {
-			if (xArray[x] <= limitator) {
-				limitator = xArray[x];
+		B.push_front(y);
+		if (d[y] > 0) {
+			if (-1 * xArray[y] <= limitator) {
+				limitator = -1 * xArray[y];
 				verticeLimitador = y;
 
 			}
@@ -147,25 +154,31 @@ int SimplexForNetworks::findCycle(int v, int w, Graph T) {
 		h2 = T.getAltura(y);
 	}
 	while (x != y) {
-		if (xArray[x] < 0) {
-			if (-1 * xArray[x] <= limitator) {
-				limitator = -1 * xArray[x];
+		A.push_back(x);
+		if (d[x] < 0) {
+			if (xArray[x] <= limitator) {
+				limitator = xArray[x];
 				verticeLimitador = x;
 
 			}
 		}
 		x = parent[x];
-		if (xArray[y] > 0) {
-			if (xArray[x] <= limitator) {
-				limitator = xArray[x];
+		B.push_front(y);
+		if (d[y] > 0) {
+			if (xArray[y] <= limitator) {
+				limitator = xArray[y];
 				verticeLimitador = y;
 
 			}
 		}
 		y = parent[y];
+
 	}
-	T.removeArc(verticeLimitador,parent[verticeLimitador]);
-	T.insertArc(false,v,w,0);
+
+	updateXArray(A, B, v, w, T, limitator);
+	xArray[w] = limitator;
+	T.removeArc(verticeLimitador, parent[verticeLimitador]);
+	T.insertArc(false, v, w, 0);
 	return limitator;
 }
 
@@ -223,28 +236,44 @@ int modulo(int a) {
 void SimplexForNetworks::updateXArray(list<int> A, list<int> B, int v, int w,
 		Graph T, int limitator) {
 	int *xArray = T.getXArray();
+	int *d = T.getDArray();
 //cout << limitator << "AQUIIII";
 	list<int>::iterator it;
-	if (v == *A.begin()) {
-		for (it = A.begin(); it != A.end(); it++) {
-			if (*it != w) {
-				xArray[*it] = xArray[*it] + (-1) * limitator;
-			}
-		}
-		for (it = B.begin(); it != B.end(); it++) {
-			if (*it != w)
-				xArray[*it] = xArray[*it] + limitator;
-		}
-	} else {
-		for (it = B.begin(); it != B.end(); it++) {
-			if (*it != w)
-				xArray[*it] = xArray[*it] + (-1) * limitator;
-		}
-		for (it = A.begin(); it != A.end(); it++) {
-			if (*it != w)
-				xArray[*it] = xArray[*it] + limitator;
-		}
+	for (it = A.begin(); it != A.end(); it++) {
+		if (d[*it] > 0)
+			xArray[*it] = xArray[*it] + limitator;
+		else
+			xArray[*it] = xArray[*it] - limitator;
 	}
+
+	for (it = B.begin(); it != B.end(); it++) {
+		if (d[*it] > 0)
+			xArray[*it] = xArray[*it] - limitator;
+		else
+			xArray[*it] = xArray[*it] + limitator;
+
+	}
+
+	/*if (v == *A.begin()) {
+	 for (it = A.begin(); it != A.end(); it++) {
+	 if (*it != w) {
+	 xArray[*it] = xArray[*it] + (-1) * limitator;
+	 }
+	 }
+	 for (it = B.begin(); it != B.end(); it++) {
+	 if (*it != w)
+	 xArray[*it] = xArray[*it] + limitator;
+	 }
+	 } else {
+	 for (it = B.begin(); it != B.end(); it++) {
+	 if (*it != w)
+	 xArray[*it] = xArray[*it] + (-1) * limitator;
+	 }
+	 for (it = A.begin(); it != A.end(); it++) {
+	 if (*it != w)
+	 xArray[*it] = xArray[*it] + limitator;
+	 }
+	 }*/
 
 }
 
