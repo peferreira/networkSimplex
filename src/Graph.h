@@ -40,7 +40,7 @@ public:
 	void printMatrixADJ();
 	list<Arc>::iterator existArc(int,int);
 	bool existArc2(int,int);
-
+	int getCustoArc(int v, int w);
 	int numArc(){return numA;}
 	void graphDFS();
 	void init(int numVertices , int vInicial, int vFinal, int prodEscoado);
@@ -55,10 +55,9 @@ public:
 	void setAltura(int *newAltura){altura = newAltura;}
 	void setDArray(int *dArray){ d = dArray ;}
 	void setXArray(int *xArray){ x = xArray ;}
-
 	bool isArcFake(int v, int w);
 	void setYArray(int *yArray){ y = yArray ;}
-
+	int getProdEscoado(){return produtoEscoado;}
 
 	list<Arc>::iterator getEnd(int x){return matrixADJ[x].end();};
 	list<Arc>::iterator getBegin(int x){return matrixADJ[x].begin();};
@@ -67,7 +66,6 @@ public:
 	int getInitialVertex(){return ini;};
 	int getFinishVertex(){return end;}
 	Graph clone();
-	int getProdEscoado(){return produtoEscoado;};
 	void printArcDetails();
 	Graph montaEstruturaArvore();
 };

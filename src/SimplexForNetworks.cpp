@@ -37,7 +37,26 @@ Graph SimplexForNetworks::Initialization(Graph G) {
 	/*clone.printMatrixADJ();
 	 clone.printArcDetails();*/
 }
+Graph SimplexForNetworks::InicializacaoFase2(Graph G, Graph T) {
+	int i = 0;
+	int numV;
+	list<Arc>::iterator it;
+	numV = T.getNumV();
+	int *xArray = T.getXArray();
+	int *new_xArray = new int[numV];
+	Graph new_tree;
+	new_tree.init(numV, T.getInitialVertex(), T.getFinishVertex(), T.getProdEscoado());
 
+	for (i = 0; i < numV; i++) {
+		for (it = T.getBegin(i); it != T.getEnd(i); it++) {
+			new_tree.insertArc(it->isFake(), it->getV(), it->getW(), G.getCustoArc(it->getV(),it->getW()));
+		}
+		new_xArray[i] = xArray[i];
+	}
+	new_tree.setXArray(new_xArray);
+	return new_tree;
+
+}
 /*void SimplexForNetworks::NetworkSimplex(Graph G) {
 
  }*/
@@ -97,7 +116,7 @@ Graph SimplexForNetworks::addArtificialArcs(Graph G) {
 
 Arc SimplexForNetworks::findEnteringArc(Graph tree, Graph T) {
 	int *y = tree.getYArray();
-	Arc *a = new Arc(true,-1,-1,-1);
+	Arc *a = new Arc(true, -1, -1, -1);
 	int i;
 	list<Arc>::iterator it;
 	for (i = 0; i < T.getNumV(); i++) {

@@ -9,7 +9,7 @@
 
 InputReader::InputReader() {
 	// TODO Auto-generated constructor stub
-	myfile.open("test/problema.dat");
+	myfile.open("src/problema.dat");
 }
 
 InputReader::~InputReader() {

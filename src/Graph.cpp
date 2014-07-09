@@ -123,6 +123,20 @@ void Graph::printMatrixADJ() {
 		cout << '\n';
 	}
 }
+int Graph::getCustoArc(int v, int w) {
+	int numV = getNumV();
+	if (v > numV || w > numV) {
+		cout << "vertice acessado é inexistente";
+	}
+	list<Arc>::iterator it = matrixADJ[v].begin();
+	while (it != matrixADJ[v].end()) {
+		if (it->getW() == w) {
+			return it->getCusto();
+		};
+		it++;
+	}
+	return -5;
+}
 
 void Graph::printArcDetails() {
 	for (int i = 0; i < numV; i++) {
@@ -131,13 +145,15 @@ void Graph::printArcDetails() {
 		while (it != matrixADJ[i].end()) {
 			cout << "v:" << it->getV() << " w:" << it->getW() << " Arc Fake:"
 					<< it->isFake() << " Arc Artificial:" << it->isArtificial()
-					<< '\n';
+					<< " custo Aresta:"<<it->getCusto() <<'\n';
 
 			it++;
 		}
 
 	}
 }
+
+
 
 void Graph::dfsR(int v) {
 	list<Arc>::iterator it;
@@ -287,7 +303,7 @@ Graph Graph::montaEstruturaArvore() {
 		if (i != 0) {
 			new_graph.insertA(true, i, 0, 1, it->getValueX(), true);
 			new_graph.insertA(false, 0, i, 1, it->getValueX(), true);
-			if(y[i] > 0){
+			if (y[i] > 0) {
 				y[i] = y[0] + 1;
 			}
 
