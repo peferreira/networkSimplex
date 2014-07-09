@@ -164,6 +164,7 @@ void Graph::dfsR(int v) {
 				d[it->getW()] = -1;
 				y[it->getW()] = y[v] - it->getCusto();
 
+
 			} else {
 				d[it->getW()] = 1;
 				y[it->getW()] = y[v] + it->getCusto();
@@ -185,7 +186,7 @@ void Graph::graphDFS() {
 		y[v] = 0;
 		d[v] = 0;
 	}
-	for (v = 0; v < numV; v++) {
+	for (v = getInitialVertex(); v < numV; v++) {
 		if (pre[v] == -1) {
 			parent[v] = v;
 			altura[v] = 0;
@@ -287,12 +288,12 @@ Graph Graph::montaEstruturaArvore() {
 	for (i = 0; i < numV; i++) {
 		for (it = matrixADJ[i].begin(); it != matrixADJ[i].end(); it++) {
 
-			if ((it->getV() == 0)) {
+			if ((it->getV() == getInitialVertex())) {
 				new_graph.insertA(false, i, it->getW(), 0, it->getValueX(),
 						false);
 				new_graph.insertA(true, it->getW(), i, 0, it->getValueX(),
 						false);
-			} else if (it->getW() == 0) {
+			} else if (it->getW() == getInitialVertex()) {
 				new_graph.insertA(true, i, it->getW(), 0, it->getValueX(),
 						false);
 				new_graph.insertA(false, it->getW(), i, 0, it->getValueX(),
@@ -300,17 +301,17 @@ Graph Graph::montaEstruturaArvore() {
 			}
 
 		}
-		if (i != 0) {
-			new_graph.insertA(true, i, 0, 1, it->getValueX(), true);
-			new_graph.insertA(false, 0, i, 1, it->getValueX(), true);
+		if (i != getInitialVertex()) {
+			new_graph.insertA(true, i, getInitialVertex(), 1, it->getValueX(), true);
+			new_graph.insertA(false, getInitialVertex(), i, 1, it->getValueX(), true);
 			if (y[i] > 0) {
-				y[i] = y[0] + 1;
+				y[i] = y[getInitialVertex()] + 1;
 			}
 
 		}
 	}
-	new_graph.printArcDetails();
-	new_graph.printMatrixADJ();
+	/*new_graph.printArcDetails();
+	new_graph.printMatrixADJ();*/
 	return new_graph;
 }
 
