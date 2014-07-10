@@ -30,6 +30,7 @@ private:
 	void dfsR(int);
 	void removeA(int,int);
 	void insertA(bool,int,int,int,int,bool);
+	int *cycle;
 
 public:
 	Graph();
@@ -58,6 +59,8 @@ public:
 	bool isArcFake(int v, int w);
 	void setYArray(int *yArray){ y = yArray ;}
 	int getProdEscoado(){return produtoEscoado;}
+	int *getCycle(){return cycle;}
+	void updateXArray();
 
 	list<Arc>::iterator getEnd(int x){return matrixADJ[x].end();};
 	list<Arc>::iterator getBegin(int x){return matrixADJ[x].begin();};

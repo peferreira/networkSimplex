@@ -21,6 +21,7 @@ Graph::Graph() {
 	x = NULL;
 	y = NULL;
 	d = NULL;
+	cycle = NULL;
 }
 
 Graph::~Graph() {
@@ -42,9 +43,11 @@ void Graph::init(int V, int ini, int end, int produtoEscoado) {
 	x = new int[V];
 	d = new int[V];
 	aux = new int[V];
+	cycle = new int[V];
 
 	for (i = 0; i < V; i++) {
 		aux[i] = d[i] = x[i] = y[i] = parent[i] = altura[i] = pre[i] = 0;
+		cycle[i] = -1;
 	}
 
 }
@@ -53,11 +56,17 @@ void Graph::insertA(bool fake, int x, int y, int custo_aresta, int valueX,
 		bool artificial) {
 	list<Arc>::iterator it = existArc(x, y);
 	Arc *new_arc;
+
 	if (it == matrixADJ[x].end()) {
 		new_arc = new Arc(fake, x, y, custo_aresta, valueX, artificial);
 		matrixADJ[x].push_back(*new_arc);
 		(this->numA)++;
 	}
+	/*else if(it->isFake()){
+	 matrixADJ[x].erase(it);
+	 new_arc = new Arc(false, x, y, custo_aresta, valueX, artificial);
+	 matrixADJ[x].push_back(*new_arc);
+	 }*/
 }
 
 void Graph::removeA(int x, int y) {
@@ -145,7 +154,7 @@ void Graph::printArcDetails() {
 		while (it != matrixADJ[i].end()) {
 			cout << "v:" << it->getV() << " w:" << it->getW() << " Arc Fake:"
 					<< it->isFake() << " Arc Artificial:" << it->isArtificial()
-					<< " custo Aresta:"<<it->getCusto() <<'\n';
+					<< " custo Aresta:" << it->getCusto() << '\n';
 
 			it++;
 		}
@@ -153,46 +162,67 @@ void Graph::printArcDetails() {
 	}
 }
 
+void Graph::updateXArray() {
+	int verticeLimitator = cycle[0];
+	int limitator = x[verticeLimitator];
+	int j;
+	int i = 0;
+	int w = cycle[1];
+	int sinal;
+	if (d[w] > 0) {
+		sinal = 1;
+	} else {
+		sinal = -1;
+	}
+
+	for (j = 2; j != -1; j++) {
+		if ((d[cycle[j]]) * d[w] > 0) {
+			x[cycle[j]] = x[cycle[j]] + limitator;
+		} else {
+			x[cycle[j]] = x[cycle[j]] - limitator;
+		}
+	}
+	x[w] = limitator;
+}
 
 
 void Graph::dfsR(int v) {
-	list<Arc>::iterator it;
-	pre[v] = conta++;
-	for (it = matrixADJ[v].begin(); it != matrixADJ[v].end(); it++) {
-		if (pre[it->getW()] == -1) {
-			if (it->isFake()) {
-				d[it->getW()] = -1;
-				y[it->getW()] = y[v] - it->getCusto();
+list<Arc>::iterator it;
+pre[v] = conta++;
+for (it = matrixADJ[v].begin(); it != matrixADJ[v].end(); it++) {
+	if (pre[it->getW()] == -1) {
+		if (it->isFake()) {
+			d[it->getW()] = -1;
+			y[it->getW()] = y[v] - it->getCusto();
 
-
-			} else {
-				d[it->getW()] = 1;
-				y[it->getW()] = y[v] + it->getCusto();
-			}
-			parent[it->getW()] = v;
-			altura[it->getW()] = altura[v] + 1;
-			dfsR(it->getW());
+		} else {
+			d[it->getW()] = 1;
+			y[it->getW()] = y[v] + it->getCusto();
 		}
+		parent[it->getW()] = v;
+		altura[it->getW()] = altura[v] + 1;
+		dfsR(it->getW());
 	}
+}
 }
 
 void Graph::graphDFS() {
-	int v;
-	conta = 0;
-	for (v = 0; v < numV; v++) {
-		pre[v] = -1;
+int v;
+conta = 0;
+for (v = 0; v < numV; v++) {
+	pre[v] = -1;
+	altura[v] = 0;
+	parent[v] = 0;
+	y[v] = 0;
+	d[v] = 0;
+}
+for (v = getInitialVertex(); v < numV; v++) {
+	if (pre[v] == -1) {
+		parent[v] = v;
 		altura[v] = 0;
-		parent[v] = 0;
-		y[v] = 0;
-		d[v] = 0;
+		dfsR(v);
 	}
-	for (v = getInitialVertex(); v < numV; v++) {
-		if (pre[v] == -1) {
-			parent[v] = v;
-			altura[v] = 0;
-			dfsR(v);
-		}
-	}
+}
 
 }
 
@@ -256,62 +286,59 @@ void Graph::graphDFS() {
  }
  */
 Graph Graph::clone() {
-	int i = 0;
-	int numV;
-	list<Arc>::iterator it;
-	numV = getNumV();
-	Graph new_graph;
-	new_graph.init(numV, getInitialVertex(), getFinishVertex(), produtoEscoado);
-	new_graph.numA = numArc();
+int i = 0;
+int numV;
+list<Arc>::iterator it;
+numV = getNumV();
+Graph new_graph;
+new_graph.init(numV, getInitialVertex(), getFinishVertex(), produtoEscoado);
+new_graph.numA = numArc();
 
-	for (i = 0; i < numV; i++) {
-		for (it = matrixADJ[i].begin(); it != matrixADJ[i].end(); it++) {
-			new_graph.insertA(it->isFake(), i, it->getW(), 0, 0, false);
-		}
-		new_graph.parent[i] = parent[i];
-		new_graph.altura[i] = altura[i];
-		new_graph.pre[i] = pre[i];
+for (i = 0; i < numV; i++) {
+	for (it = matrixADJ[i].begin(); it != matrixADJ[i].end(); it++) {
+		new_graph.insertA(it->isFake(), i, it->getW(), 0, 0, false);
 	}
+	new_graph.parent[i] = parent[i];
+	new_graph.altura[i] = altura[i];
+	new_graph.pre[i] = pre[i];
+}
 
-	return new_graph;
+return new_graph;
 }
 
 Graph Graph::montaEstruturaArvore() {
-	int i = 0;
-	int numV;
-	list<Arc>::iterator it;
-	numV = getNumV();
-	Graph new_graph;
-	new_graph.init(numV, getInitialVertex(), getFinishVertex(),
-			getProdEscoado());
+int i = 0;
+int numV;
+list<Arc>::iterator it;
+numV = getNumV();
+Graph new_graph;
+new_graph.init(numV, getInitialVertex(), getFinishVertex(), getProdEscoado());
 
-	for (i = 0; i < numV; i++) {
-		for (it = matrixADJ[i].begin(); it != matrixADJ[i].end(); it++) {
+for (i = 0; i < numV; i++) {
+	for (it = matrixADJ[i].begin(); it != matrixADJ[i].end(); it++) {
 
-			if ((it->getV() == getInitialVertex())) {
-				new_graph.insertA(false, i, it->getW(), 0, it->getValueX(),
-						false);
-				new_graph.insertA(true, it->getW(), i, 0, it->getValueX(),
-						false);
-			} else if (it->getW() == getInitialVertex()) {
-				new_graph.insertA(true, i, it->getW(), 0, it->getValueX(),
-						false);
-				new_graph.insertA(false, it->getW(), i, 0, it->getValueX(),
-						false);
-			}
-
+		if ((it->getV() == getInitialVertex())) {
+			new_graph.insertA(false, i, it->getW(), 0, it->getValueX(), false);
+			new_graph.insertA(true, it->getW(), i, 0, it->getValueX(), false);
+		} else if (it->getW() == getInitialVertex()) {
+			new_graph.insertA(true, i, it->getW(), 0, it->getValueX(), false);
+			new_graph.insertA(false, it->getW(), i, 0, it->getValueX(), false);
 		}
-		if (i != getInitialVertex()) {
-			new_graph.insertA(true, i, getInitialVertex(), 1, it->getValueX(), true);
-			new_graph.insertA(false, getInitialVertex(), i, 1, it->getValueX(), true);
-			if (y[i] > 0) {
-				y[i] = y[getInitialVertex()] + 1;
-			}
 
-		}
 	}
-	/*new_graph.printArcDetails();
-	new_graph.printMatrixADJ();*/
-	return new_graph;
+	if (i != getInitialVertex()) {
+		new_graph.insertA(true, i, getInitialVertex(), 1, it->getValueX(),
+				true);
+		new_graph.insertA(false, getInitialVertex(), i, 1, it->getValueX(),
+				true);
+		if (y[i] > 0) {
+			y[i] = y[getInitialVertex()] + 1;
+		}
+
+	}
+}
+/*new_graph.printArcDetails();
+ new_graph.printMatrixADJ();*/
+return new_graph;
 }
 

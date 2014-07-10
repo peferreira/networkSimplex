@@ -23,7 +23,7 @@ Graph SimplexForNetworks::Initialization(Graph G) {
 	int *new_x_array = new int[G.getNumV()];
 	for (i = 0; i < G.getNumV(); i++) {
 		if (i == finishVertex) {
-			cout<< "final vertex é:" << i << '\n';
+			cout << "final vertex é:" << i << '\n';
 			new_x_array[i] = G.getProdEscoado();
 
 		} else {
@@ -46,11 +46,13 @@ Graph SimplexForNetworks::InicializacaoFase2(Graph G, Graph T) {
 	int *xArray = T.getXArray();
 	int *new_xArray = new int[numV];
 	Graph new_tree;
-	new_tree.init(numV, T.getInitialVertex(), T.getFinishVertex(), T.getProdEscoado());
+	new_tree.init(numV, T.getInitialVertex(), T.getFinishVertex(),
+			T.getProdEscoado());
 
 	for (i = 0; i < numV; i++) {
 		for (it = T.getBegin(i); it != T.getEnd(i); it++) {
-			new_tree.insertArc(it->isFake(), it->getV(), it->getW(), G.getCustoArc(it->getV(),it->getW()));
+			new_tree.insertArc(it->isFake(), it->getV(), it->getW(),
+					G.getCustoArc(it->getV(), it->getW()));
 		}
 		new_xArray[i] = xArray[i];
 	}
@@ -125,7 +127,8 @@ Arc SimplexForNetworks::findEnteringArc(Graph tree, Graph T) {
 			if (!(it->isArtificial())) {
 				//cout << "v:" << it->getV() << " w:" << it->getW() << "************" << '\n' ;
 				if ((y[i] + it->getCusto()) < y[it->getW()]) {
-					cout << "v:" << it->getV() << " w:" << it->getW() << "************" << '\n' ;
+					cout << "v:" << it->getV() << " w:" << it->getW()
+							<< "************" << '\n';
 					return *it;
 					//cout << "v:" << it->getV() << " w:" << it->getW() << '|';
 
@@ -137,14 +140,16 @@ Arc SimplexForNetworks::findEnteringArc(Graph tree, Graph T) {
 }
 
 /*supoe x > y, h1 > h2*/
-int SimplexForNetworks::findCycle(int v, int w, Graph *T, bool isFake) {
+int SimplexForNetworks::findCycle(int v, int w, Graph *T, bool isFake,
+		int value) {
 	int *parent = T->getParent();
 	int limitator = T->getProdEscoado();
 	int verticeLimitador = v;
 	int h1, h2, temp, x, y;
 	int *xArray = T->getXArray();
 	int *d = T->getDArray();
-
+	int *cycle = T->getCycle();
+	bool quebrouEmA;
 	h1 = T->getAltura(v);
 	h2 = T->getAltura(w);
 	x = v;
@@ -152,28 +157,34 @@ int SimplexForNetworks::findCycle(int v, int w, Graph *T, bool isFake) {
 	list<int> A;
 	list<int> B;
 	list<int>::iterator it;
+	int j = 2;
 	while (h1 > h2) {
 		A.push_back(x);
 		if (d[x] < 0) {
 			if (xArray[x] <= limitator) {
 				limitator = xArray[parent[x]];
 				verticeLimitador = x;
+				quebrouEmA = true;
+				cycle[j] = x;
+				j++;
 				/*cout << "limitador agora é:" << limitator << '\n';
-				cout << "vertice limitador é:" << verticeLimitador << '\n';*/
-
+				 cout << "vertice limitador é:" << verticeLimitador << '\n';*/
+				//fake = true;
 			}
 		}
 		x = parent[x];
 		h1 = T->getAltura(x);
 	}
 	while (h2 > h1) {
-		B.push_front(y);
+		B.push_back(y);
 		if (d[y] > 0) {
-			if (-1 * xArray[y] <= limitator) {
-				limitator = -1 * xArray[y];
+			if (xArray[y] <= limitator) {
+				limitator = xArray[y];
 				verticeLimitador = y;
-
-
+				quebrouEmA = false;
+				//fake = false;
+				cycle[j] = y;
+				j++;
 			}
 		}
 		y = parent[y];
@@ -185,29 +196,38 @@ int SimplexForNetworks::findCycle(int v, int w, Graph *T, bool isFake) {
 			if (xArray[x] <= limitator) {
 				limitator = xArray[x];
 				verticeLimitador = x;
-
+				//fake = true;
+				quebrouEmA = true;
+				cycle[j] = x;
 
 			}
 		}
 		x = parent[x];
-		B.push_front(y);
+		B.push_back(y);
 		if (d[y] > 0) {
 			if (xArray[y] <= limitator) {
 				limitator = xArray[y];
 				verticeLimitador = y;
-
+				//fake = false;
+				quebrouEmA = false;
+				cycle[j] = x;
 			}
 		}
 		y = parent[y];
 
 	}
-
-	updateXArray(A, B, v, w, T, limitator);
-	xArray[w] = limitator;
+	cycle[0] = verticeLimitador;
+	cycle[j] = -1;
+	cycle[1] = w;
+	updateXArray(A, B, v, w, T, limitator, quebrouEmA);
+	if (limitator > 0)
+		xArray[w] = limitator;
 	cout << "limitator:" << limitator << '\n';
-	cout << "arco saindo: " << verticeLimitador << " " << parent[verticeLimitador] << '\n';
+
+	cout << "arco saindo: " << verticeLimitador << " "
+			<< parent[verticeLimitador] << '\n';
 	T->removeArc(verticeLimitador, parent[verticeLimitador]);
-	T->insertArc(isFake, v, w, 0);
+	T->insertArc(false, v, w, value);
 	return limitator;
 }
 
@@ -263,46 +283,27 @@ int modulo(int a) {
 		return -1 * a;
 }
 void SimplexForNetworks::updateXArray(list<int> A, list<int> B, int v, int w,
-		Graph *T, int limitator) {
+		Graph *T, int limitator, bool quebrouEmA) {
 	int *xArray = T->getXArray();
 	int *d = T->getDArray();
+	int *parent = T->getParent();
 //cout << limitator << "AQUIIII";
 	list<int>::iterator it;
+
 	for (it = A.begin(); it != A.end(); it++) {
-		if (d[*it] > 0)
-			xArray[*it] = xArray[*it] + limitator;
-		else
-			xArray[*it] = xArray[*it] - limitator;
-	}
-
-	for (it = B.begin(); it != B.end(); it++) {
-		if (d[*it] > 0)
-			xArray[*it] = xArray[*it] - limitator;
-		else
-			xArray[*it] = xArray[*it] + limitator;
-
-	}
-	/*if (v == *A.begin()) {
-	 for (it = A.begin(); it != A.end(); it++) {
-	 if (*it != w) {
-	 xArray[*it] = xArray[*it] + (-1) * limitator;
-	 }
-	 }
-	 for (it = B.begin(); it != B.end(); it++) {
-	 if (*it != w)
+	 if (d[*it] > 0)
 	 xArray[*it] = xArray[*it] + limitator;
+	 else
+	 xArray[*it] = xArray[*it] - limitator;
 	 }
-	 } else {
-	 for (it = B.begin(); it != B.end(); it++) {
-	 if (*it != w)
-	 xArray[*it] = xArray[*it] + (-1) * limitator;
-	 }
-	 for (it = A.begin(); it != A.end(); it++) {
-	 if (*it != w)
-	 xArray[*it] = xArray[*it] + limitator;
-	 }
-	 }*/
 
+	 for (it = B.begin(); it != B.end(); it++) {
+	 if (d[*it] > 0)
+	 xArray[*it] = xArray[*it] - limitator;
+	 else
+	 xArray[*it] = xArray[*it] + limitator;
+
+	 }
 }
 
 void SimplexForNetworks::printListInt(list<int> L) {

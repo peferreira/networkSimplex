@@ -44,15 +44,15 @@ int main() {
 	printAuxArrays(T);
 
 	T.graphDFS();
-
 	printAuxArrays(T);
 
 	Arc c = simplex.findEnteringArc(T, H);
 	while (c.getV() >= 0) {
-		simplex.findCycle(c.getV(), c.getW(), &T, c.isFake());
+		simplex.findCycle(c.getV(), c.getW(), &T, c.isFake(),c.getCusto());
 		printAuxArrays(T);
 
 		T.graphDFS();
+		printAuxArrays(T);
 		c = simplex.findEnteringArc(T, H);
 	}
 
@@ -65,12 +65,14 @@ int main() {
 
 	c = simplex.findEnteringArc(T, *G);
 	while (c.getV() >= 0) {
-		simplex.findCycle(c.getV(), c.getW(), &T, c.isFake());
+		simplex.findCycle(c.getV(), c.getW(), &T, c.isFake(), c.getCusto());
 
 		T.graphDFS();
+		printAuxArrays(T);
+
 		c = simplex.findEnteringArc(T, *G);
 
 	}
 
-
+	printAuxArrays(T);
 }
