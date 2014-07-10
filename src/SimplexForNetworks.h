@@ -19,11 +19,9 @@ public:
 	void NetworkSimplex(Graph G);
 	Graph Initialization(Graph G);
 	Graph InicializacaoFase2(Graph G, Graph T);
-	Graph addArtificialArcs(Graph G);
-	int findCycle(int v, int w, Graph *T, bool isFake,int custo);
+	int findCycle(int v, int w, Graph *T, int custo);
 	Arc findEnteringArc(Graph T, Graph tree);
 	void updateXArray(list<int> A, list<int> B, int v, int w,Graph *T,int limitator,bool quebrouEmA, int);
-	void printListInt(list<int> L);
 	void corrigeX(list<int> AouB, int verticeLimitador, int *d,Graph *T);
 };
 

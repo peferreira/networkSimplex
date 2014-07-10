@@ -1,29 +1,29 @@
 /*
  * InputReader.cpp
  *
- *  Created on: Jul 3, 2014
+ *
  *      Author: pedro
  */
 
 #include "InputReader.h"
 
 InputReader::InputReader() {
-	// TODO Auto-generated constructor stub
+
 	myfile.open("src/problema.dat");
 }
 
 InputReader::~InputReader() {
-	// TODO Auto-generated destructor stub
 
 }
-
+/*funcao de leitura do input pegando somente numeros da forma padronizada
+ * pelo enunciado*/
 char InputReader::getAlphanum(){
 	char c, value;
 	if (myfile.is_open()) {
 		while (myfile.good()) {
 			c = myfile.get();
 
-			if (isalnum(c)) {
+			if (isdigit(c)) {
 				value = c;
 				return value;
 			}
@@ -32,6 +32,8 @@ char InputReader::getAlphanum(){
 	return '\0';
 }
 
+/*abre para leitura e le do arquivo problema.dat, caminho
+ * definido estaticamente no construtor*/
 int InputReader::loadFile(Graph *G) {
 
 	string line;
@@ -41,16 +43,11 @@ int InputReader::loadFile(Graph *G) {
 		myfile>>vIni;
 		myfile>>vFim;
 		myfile>>quantProdEscoado;
-		//cout << V << '\n';
-		//cout << vIni << '\n';
-		//cout << vFim << '\n';
-		//cout << quantProd << '\n';
 		G->init(V,vIni,vFim,quantProdEscoado);
 		while(myfile.good()) {
 			myfile>>x;
 			myfile>>y;
 			myfile>>c;
-			//cout << x << ' ' << y  << ' ' << c << '\n';
 			G->insertArc(false,x,y,c);
 
 		}

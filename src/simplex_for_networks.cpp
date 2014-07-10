@@ -12,6 +12,7 @@ void printVector2(int *t, int size, string s) {
 	cout << "]" << '\n';
 }
 
+
 void printAuxArrays(Graph T) {
 	int *t = T.getXArray();
 	printVector2(t, T.getNumV(), "X");
@@ -26,53 +27,48 @@ void printAuxArrays(Graph T) {
 	//T.printMatrixADJ();
 	//T.printArcDetails();
 }
-int main() {
+
+void NetworkSimplex(){
 	InputReader input;
 	SimplexForNetworks simplex;
 
-	int i;
-	int V;
-	int *t, *h;
 	Graph *G;
+
 	G = new Graph();
 	input.loadFile(G);
 
-	Graph T = G->montaEstruturaArvore();
+	Graph T= G->montaEstruturaArvore();
 	Graph H = G->clone();
 
 	T = simplex.Initialization(T);
-	printAuxArrays(T);
-
 	T.graphDFS(T.getInitialVertex());
-	printAuxArrays(T);
-
 	Arc c = simplex.findEnteringArc(T, H);
-	while (c.getV() >= 0) {
-		simplex.findCycle(c.getV(), c.getW(), &T, c.isFake(),c.getCusto());
-		printAuxArrays(T);
 
+    while (c.getV() >= 0) {
+		simplex.findCycle(c.getV(), c.getW(), &T, c.getCusto());
 		T.graphDFS(T.getInitialVertex());
-		printAuxArrays(T);
 		c = simplex.findEnteringArc(T, H);
 	}
 
-	cout << "FIMMM DA PRIMEIRA FASE!!!!!!!!!!!!!!!!!!!" << '\n';
+	/*FIM DA PRIMEIRA FASE*/
 
-	cout << '\n';
 	T = simplex.InicializacaoFase2(*G, T);
-
 	T.graphDFS(T.getInitialVertex());
-
 	c = simplex.findEnteringArc(T, *G);
+
+
 	while (c.getV() >= 0) {
-		simplex.findCycle(c.getV(), c.getW(), &T, c.isFake(), c.getCusto());
-
+		simplex.findCycle(c.getV(), c.getW(), &T, c.getCusto());
 		T.graphDFS(T.getInitialVertex());
-		printAuxArrays(T);
-
 		c = simplex.findEnteringArc(T, *G);
-
 	}
-
 	printAuxArrays(T);
 }
+
+
+int main() {
+	NetworkSimplex();
+	return 0;
+}
+
+
