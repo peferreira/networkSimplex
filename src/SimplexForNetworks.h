@@ -22,8 +22,9 @@ public:
 	Graph addArtificialArcs(Graph G);
 	int findCycle(int v, int w, Graph *T, bool isFake,int custo);
 	Arc findEnteringArc(Graph T, Graph tree);
-	void updateXArray(list<int> A, list<int> B, int v, int w,Graph *T,int limitator,bool quebrouEmA);
+	void updateXArray(list<int> A, list<int> B, int v, int w,Graph *T,int limitator,bool quebrouEmA, int);
 	void printListInt(list<int> L);
+	void corrigeX(list<int> AouB, int verticeLimitador, int *d,Graph *T);
 };
 
 #endif /* SIMPLEXFORNETWORKS_H_ */

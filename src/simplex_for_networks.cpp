@@ -43,7 +43,7 @@ int main() {
 	T = simplex.Initialization(T);
 	printAuxArrays(T);
 
-	T.graphDFS();
+	T.graphDFS(T.getInitialVertex());
 	printAuxArrays(T);
 
 	Arc c = simplex.findEnteringArc(T, H);
@@ -51,7 +51,7 @@ int main() {
 		simplex.findCycle(c.getV(), c.getW(), &T, c.isFake(),c.getCusto());
 		printAuxArrays(T);
 
-		T.graphDFS();
+		T.graphDFS(T.getInitialVertex());
 		printAuxArrays(T);
 		c = simplex.findEnteringArc(T, H);
 	}
@@ -61,13 +61,13 @@ int main() {
 	cout << '\n';
 	T = simplex.InicializacaoFase2(*G, T);
 
-	T.graphDFS();
+	T.graphDFS(T.getInitialVertex());
 
 	c = simplex.findEnteringArc(T, *G);
 	while (c.getV() >= 0) {
 		simplex.findCycle(c.getV(), c.getW(), &T, c.isFake(), c.getCusto());
 
-		T.graphDFS();
+		T.graphDFS(T.getInitialVertex());
 		printAuxArrays(T);
 
 		c = simplex.findEnteringArc(T, *G);

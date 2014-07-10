@@ -43,7 +43,7 @@ public:
 	bool existArc2(int,int);
 	int getCustoArc(int v, int w);
 	int numArc(){return numA;}
-	void graphDFS();
+	void graphDFS(int start);
 	void init(int numVertices , int vInicial, int vFinal, int prodEscoado);
 	int *getParent(){return parent;}
 	int *getAlturaArray(){return altura;}

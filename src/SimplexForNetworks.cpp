@@ -162,11 +162,12 @@ int SimplexForNetworks::findCycle(int v, int w, Graph *T, bool isFake,
 		A.push_back(x);
 		if (d[x] < 0) {
 			if (xArray[x] <= limitator) {
-				limitator = xArray[parent[x]];
+				limitator = xArray[x];
 				verticeLimitador = x;
 				quebrouEmA = true;
 				cycle[j] = x;
 				j++;
+
 				/*cout << "limitador agora é:" << limitator << '\n';
 				 cout << "vertice limitador é:" << verticeLimitador << '\n';*/
 				//fake = true;
@@ -216,12 +217,18 @@ int SimplexForNetworks::findCycle(int v, int w, Graph *T, bool isFake,
 		y = parent[y];
 
 	}
-	cycle[0] = verticeLimitador;
+	cout << "limitator:" << limitator <<  "  ********************"<< '\n' ;
+	/*cycle[0] = verti	T->removeArc(verticeLimitador, parent[verticeLimitador]);
+	 * ceLimitador;
 	cycle[j] = -1;
-	cycle[1] = w;
-	updateXArray(A, B, v, w, T, limitator, quebrouEmA);
-	if (limitator > 0)
-		xArray[w] = limitator;
+	cycle[1] = w;*/
+
+	updateXArray(A, B, v, w, T, limitator, quebrouEmA, verticeLimitador);
+	/*if (quebrouEmA)
+		xArray[v] = limitator;
+	else
+		xArray[w] = limitator;*/
+	cout << "quebrouEmA: " << quebrouEmA << '\n';
 	cout << "limitator:" << limitator << '\n';
 
 	cout << "arco saindo: " << verticeLimitador << " "
@@ -282,8 +289,32 @@ int modulo(int a) {
 	} else
 		return -1 * a;
 }
+void SimplexForNetworks::corrigeX(list<int> AouB, int verticeLimitador, int *d,Graph *T){
+	list<int>::iterator it;
+	it =  AouB.begin();
+	int verticeAnterior;
+	int *xArray = T->getXArray();
+	cout << "valor na funcao corrigeXararay" << '\n';
+	int temp1, temp2;
+	temp1 = xArray[*it];
+	while(*it != verticeLimitador){
+		verticeAnterior = *it;
+		it++;
+		cout << "x["<< *it << "]=" << xArray[*it]<< '\n';
+		temp2 = xArray[*it];
+		xArray[*it] = temp1;
+		temp1 = temp2;
+
+
+		cout << "x["<< *it << "]=" << xArray[*it]<< '\n';
+
+		//cout << "x["<< * << "]=" << xArray[verticeAnterior]<< '\n';
+		//cout << "x:"<< *it << " = "<< "x:" << verticeAnterior << '\n';
+	}
+}
+
 void SimplexForNetworks::updateXArray(list<int> A, list<int> B, int v, int w,
-		Graph *T, int limitator, bool quebrouEmA) {
+		Graph *T, int limitator, bool quebrouEmA, int verticeLimitador) {
 	int *xArray = T->getXArray();
 	int *d = T->getDArray();
 	int *parent = T->getParent();
@@ -291,19 +322,32 @@ void SimplexForNetworks::updateXArray(list<int> A, list<int> B, int v, int w,
 	list<int>::iterator it;
 
 	for (it = A.begin(); it != A.end(); it++) {
-	 if (d[*it] > 0)
-	 xArray[*it] = xArray[*it] + limitator;
-	 else
-	 xArray[*it] = xArray[*it] - limitator;
-	 }
+		if (d[*it] > 0)
+			xArray[*it] = xArray[*it] + limitator;
 
-	 for (it = B.begin(); it != B.end(); it++) {
-	 if (d[*it] > 0)
-	 xArray[*it] = xArray[*it] - limitator;
-	 else
-	 xArray[*it] = xArray[*it] + limitator;
+		else
+			xArray[*it] = xArray[*it] - limitator;
+	}
+	cout << "valor na funcao updateXarray" << '\n';
+	for (it = B.begin(); it != B.end(); it++) {
+		if (d[*it] > 0){
+			xArray[*it] = xArray[*it] - limitator;
+			cout << "x["<< *it << "]=" << xArray[*it]<< '\n';
+		}
+		else{
+			xArray[*it] = xArray[*it] + limitator;
+			cout << "x["<< *it << "]=" << xArray[*it]<< '\n';
 
-	 }
+		}
+	}
+	if(quebrouEmA){
+		corrigeX(A,verticeLimitador,d,T);
+		xArray[v] = limitator;
+	}
+	else{
+		corrigeX(B,verticeLimitador,d,T);
+		xArray[w] = limitator;
+	}
 }
 
 void SimplexForNetworks::printListInt(list<int> L) {

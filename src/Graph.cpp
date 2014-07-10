@@ -185,44 +185,49 @@ void Graph::updateXArray() {
 	x[w] = limitator;
 }
 
-
 void Graph::dfsR(int v) {
-list<Arc>::iterator it;
-pre[v] = conta++;
-for (it = matrixADJ[v].begin(); it != matrixADJ[v].end(); it++) {
-	if (pre[it->getW()] == -1) {
-		if (it->isFake()) {
-			d[it->getW()] = -1;
-			y[it->getW()] = y[v] - it->getCusto();
+	list<Arc>::iterator it;
+	pre[v] = conta++;
+	for (it = matrixADJ[v].begin(); it != matrixADJ[v].end(); it++) {
+		if (pre[it->getW()] == -1) {
+			if (it->isFake()) {
+				d[it->getW()] = -1;
+				y[it->getW()] = y[v] - it->getCusto();
 
-		} else {
-			d[it->getW()] = 1;
-			y[it->getW()] = y[v] + it->getCusto();
+			} else {
+				d[it->getW()] = 1;
+				y[it->getW()] = y[v] + it->getCusto();
+			}
+			parent[it->getW()] = v;
+			altura[it->getW()] = altura[v] + 1;
+			dfsR(it->getW());
 		}
-		parent[it->getW()] = v;
-		altura[it->getW()] = altura[v] + 1;
-		dfsR(it->getW());
 	}
-}
 }
 
-void Graph::graphDFS() {
-int v;
-conta = 0;
-for (v = 0; v < numV; v++) {
-	pre[v] = -1;
-	altura[v] = 0;
-	parent[v] = 0;
-	y[v] = 0;
-	d[v] = 0;
-}
-for (v = getInitialVertex(); v < numV; v++) {
-	if (pre[v] == -1) {
-		parent[v] = v;
+void Graph::graphDFS(int start) {
+	int v;
+	conta = 0;
+	for (v = 0; v < numV; v++) {
+		pre[v] = -1;
 		altura[v] = 0;
-		dfsR(v);
+		parent[v] = 0;
+		y[v] = 0;
+		d[v] = 0;
 	}
-}
+	if(start < 0){
+	v = getInitialVertex();
+	}
+	else{
+		v =start;
+	}
+
+		if (pre[v] == -1) {
+			parent[v] = v;
+			altura[v] = 0;
+			dfsR(v);
+		}
+
 
 }
 
@@ -286,59 +291,64 @@ for (v = getInitialVertex(); v < numV; v++) {
  }
  */
 Graph Graph::clone() {
-int i = 0;
-int numV;
-list<Arc>::iterator it;
-numV = getNumV();
-Graph new_graph;
-new_graph.init(numV, getInitialVertex(), getFinishVertex(), produtoEscoado);
-new_graph.numA = numArc();
+	int i = 0;
+	int numV;
+	list<Arc>::iterator it;
+	numV = getNumV();
+	Graph new_graph;
+	new_graph.init(numV, getInitialVertex(), getFinishVertex(), produtoEscoado);
+	new_graph.numA = numArc();
 
-for (i = 0; i < numV; i++) {
-	for (it = matrixADJ[i].begin(); it != matrixADJ[i].end(); it++) {
-		new_graph.insertA(it->isFake(), i, it->getW(), 0, 0, false);
+	for (i = 0; i < numV; i++) {
+		for (it = matrixADJ[i].begin(); it != matrixADJ[i].end(); it++) {
+			new_graph.insertA(it->isFake(), i, it->getW(), 0, 0, false);
+		}
+		new_graph.parent[i] = parent[i];
+		new_graph.altura[i] = altura[i];
+		new_graph.pre[i] = pre[i];
 	}
-	new_graph.parent[i] = parent[i];
-	new_graph.altura[i] = altura[i];
-	new_graph.pre[i] = pre[i];
-}
 
-return new_graph;
+	return new_graph;
 }
 
 Graph Graph::montaEstruturaArvore() {
-int i = 0;
-int numV;
-list<Arc>::iterator it;
-numV = getNumV();
-Graph new_graph;
-new_graph.init(numV, getInitialVertex(), getFinishVertex(), getProdEscoado());
+	int i = 0;
+	int numV;
+	list<Arc>::iterator it;
+	numV = getNumV();
+	Graph new_graph;
+	new_graph.init(numV, getInitialVertex(), getFinishVertex(),
+			getProdEscoado());
 
-for (i = 0; i < numV; i++) {
-	for (it = matrixADJ[i].begin(); it != matrixADJ[i].end(); it++) {
+	for (i = 0; i < numV; i++) {
+		for (it = matrixADJ[i].begin(); it != matrixADJ[i].end(); it++) {
 
-		if ((it->getV() == getInitialVertex())) {
-			new_graph.insertA(false, i, it->getW(), 0, it->getValueX(), false);
-			new_graph.insertA(true, it->getW(), i, 0, it->getValueX(), false);
-		} else if (it->getW() == getInitialVertex()) {
-			new_graph.insertA(true, i, it->getW(), 0, it->getValueX(), false);
-			new_graph.insertA(false, it->getW(), i, 0, it->getValueX(), false);
+			if ((it->getV() == getInitialVertex())) {
+				new_graph.insertA(false, i, it->getW(), 0, it->getValueX(),
+						false);
+				new_graph.insertA(true, it->getW(), i, 0, it->getValueX(),
+						false);
+			} else if (it->getW() == getInitialVertex()) {
+				new_graph.insertA(true, i, it->getW(), 0, it->getValueX(),
+						false);
+				new_graph.insertA(false, it->getW(), i, 0, it->getValueX(),
+						false);
+			}
+
 		}
+		if (i != getInitialVertex()) {
+			new_graph.insertA(true, i, getInitialVertex(), 1, it->getValueX(),
+					true);
+			new_graph.insertA(false, getInitialVertex(), i, 1, it->getValueX(),
+					true);
+			if (y[i] > 0) {
+				y[i] = y[getInitialVertex()] + 1;
+			}
 
-	}
-	if (i != getInitialVertex()) {
-		new_graph.insertA(true, i, getInitialVertex(), 1, it->getValueX(),
-				true);
-		new_graph.insertA(false, getInitialVertex(), i, 1, it->getValueX(),
-				true);
-		if (y[i] > 0) {
-			y[i] = y[getInitialVertex()] + 1;
 		}
-
 	}
-}
-/*new_graph.printArcDetails();
- new_graph.printMatrixADJ();*/
-return new_graph;
+	/*new_graph.printArcDetails();
+	 new_graph.printMatrixADJ();*/
+	return new_graph;
 }
 
