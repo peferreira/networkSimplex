@@ -23,6 +23,7 @@ public:
 	Arc findEnteringArc(Graph T, Graph tree);
 	void updateXArray(list<int> A, list<int> B, int v, int w,Graph *T,int limitator,bool quebrouEmA, int);
 	void corrigeX(list<int> AouB, int verticeLimitador, int *d,Graph *T);
+	void imprimeArcosECustosOtimos(Graph G, Graph T);
 };
 
 #endif /* SIMPLEXFORNETWORKS_H_ */

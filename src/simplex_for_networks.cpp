@@ -62,7 +62,8 @@ void NetworkSimplex(){
 		T.graphDFS(T.getInitialVertex());
 		c = simplex.findEnteringArc(T, *G);
 	}
-	printAuxArrays(T);
+
+	simplex.imprimeArcosECustosOtimos(*G,T);
 }
 
 

@@ -98,7 +98,7 @@ bool Graph::existArc2(int v, int w) {
 		cout << "vertice acessado é inexistente";
 	}
 	while (it != matrixADJ[v].end()) {
-		if (it->getW() == w) {
+		if (it->getW() == w && !(it->isFake())) {
 			return true;
 		};
 		it++;
@@ -150,8 +150,6 @@ void Graph::printArcDetails() {
 	}
 }
 
-
-
 void Graph::dfsR(int v) {
 	list<Arc>::iterator it;
 	pre[v] = conta++;
@@ -195,7 +193,6 @@ void Graph::graphDFS(int start) {
 	}
 
 }
-
 
 Graph Graph::clone() {
 	int i;

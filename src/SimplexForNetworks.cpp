@@ -64,8 +64,6 @@ Graph SimplexForNetworks::InicializacaoFase2(Graph G, Graph T) {
 	return new_tree;
 }
 
-
-
 /*funcao responsavel por encontrar um arco promissor para entrar na arvore, metodo
  * utilizado: encontra o primeiro arco promissor*/
 Arc SimplexForNetworks::findEnteringArc(Graph tree, Graph T) {
@@ -75,7 +73,7 @@ Arc SimplexForNetworks::findEnteringArc(Graph tree, Graph T) {
 	list<Arc>::iterator it;
 	a = new Arc(true, -1, -1, -1);
 	y = tree.getYArray();
-		for (i = 0; i < T.getNumV(); i++) {
+	for (i = 0; i < T.getNumV(); i++) {
 		for (it = T.getBegin(i); it != T.getEnd(i); it++) {
 			if (!(it->isArtificial())) {
 				if ((y[i] + it->getCusto()) < y[it->getW()]) {
@@ -213,4 +211,25 @@ void SimplexForNetworks::updateXArray(list<int> A, list<int> B, int v, int w,
 	}
 }
 
-
+void SimplexForNetworks::imprimeArcosECustosOtimos(Graph G, Graph T) {
+	int i,custoTotal;
+	int *x;
+	list<Arc>::iterator it;
+	x = T.getXArray();
+	custoTotal = 0;
+	for (i = 0; i < G.getNumV(); i++) {
+		for (it = G.getBegin(i); it != G.getEnd(i); it++) {
+			if (T.existArc2(it->getV(), it->getW())) {
+				cout << it->getV() << " " << it->getW() << " "
+						<< x[it->getW()] << '\n';
+				custoTotal = custoTotal + it->getCusto()*x[it->getW()];
+			} else{
+				cout << it->getV() << " " << it->getW() << " " << 0 <<'\n';
+			}
+		}
+	}
+	cout << "custo deste caminho é: " << custoTotal<< '\n'<<
+			"este é o custo minimo para escoar um produto"<< '\n' <<
+			"do vertice: "<< G.getInitialVertex()<< '\n' <<
+			"para o vertice: "<< G.getFinishVertex()<<'\n';
+}
