@@ -34,8 +34,8 @@ void Graph::init(int V, int ini, int end, int produtoEscoado) {
 	cycle = new int[V];
 
 	for (i = 0; i < V; i++) {
-		d[i] = x[i] = y[i] = parent[i] = altura[i] = pre[i] = 0;
-		cycle[i] = -1;
+		d[i] = x[i] = y[i] = parent[i] = altura[i] = 0;
+		cycle[i] = pre[i] = -1;
 	}
 }
 
@@ -229,24 +229,31 @@ Graph Graph::montaEstruturaArvore() {
 	for (i = 0; i < numV; i++) {
 		for (it = matrixADJ[i].begin(); it != matrixADJ[i].end(); it++) {
 
-			if ((it->getV() == getInitialVertex())) {
-				new_graph.insertA(false, i, it->getW(), 0, it->getValueX(),
-						false);
-				new_graph.insertA(true, it->getW(), i, 0, it->getValueX(),
-						false);
+			if ((it->getV() == getInitialVertex()) && !(it->isFake())) {
+				new_graph.insertA(false, it->getV(), it->getW(), 0,
+						it->getValueX(), false);
+				new_graph.insertA(true, it->getW(), it->getV(), 0,
+						it->getValueX(), false);
 			} else if (it->getW() == getInitialVertex()) {
-				new_graph.insertA(true, i, it->getW(), 0, it->getValueX(),
-						false);
-				new_graph.insertA(false, it->getW(), i, 0, it->getValueX(),
-						false);
+				/*new_graph.insertA(true, i, it->getW(), 0, it->getValueX(),
+				 false);*/
+				/*new_graph.insertA(false, it->getV(), it->getW(), 0,
+				 it->getValueX(), false);*/
 			}
 
 		}
+
+	}
+
+	for (i = 0; i < numV; i++) {
 		if (i != getInitialVertex()) {
-			new_graph.insertA(true, i, getInitialVertex(), 1, it->getValueX(),
-					true);
-			new_graph.insertA(false, getInitialVertex(), i, 1, it->getValueX(),
-					true);
+
+			if (!existArc2(getInitialVertex(), i)) {
+				new_graph.insertA(false, getInitialVertex(), i, 1,
+						it->getValueX(), true);
+				new_graph.insertA(true, i, getInitialVertex(), 1,
+						it->getValueX(), true);
+			}
 			if (y[i] > 0) {
 				y[i] = y[getInitialVertex()] + 1;
 			}

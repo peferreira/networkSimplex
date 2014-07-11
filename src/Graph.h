@@ -18,9 +18,10 @@ private:
 	list<Arc> *matrixADJ;
 	void dfsR(int);
 	void removeA(int,int);
-	void insertA(bool,int,int,int,int,bool);
+
 
 public:
+	void insertA(bool,int,int,int,int,bool);
 	Graph();
 	virtual ~Graph();
 	void insertArc(bool,int,int,int);

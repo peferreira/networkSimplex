@@ -55,8 +55,8 @@ Graph SimplexForNetworks::InicializacaoFase2(Graph G, Graph T) {
 
 	for (i = 0; i < numV; i++) {
 		for (it = T.getBegin(i); it != T.getEnd(i); it++) {
-			new_tree.insertArc(it->isFake(), it->getV(), it->getW(),
-					G.getCustoArc(it->getV(), it->getW()));
+			new_tree.insertA(it->isFake(), it->getV(), it->getW(),
+								G.getCustoArc(it->getV(), it->getW()),0,false);
 		}
 		new_xArray[i] = xArray[i];
 	}
@@ -75,8 +75,9 @@ Arc SimplexForNetworks::findEnteringArc(Graph tree, Graph T) {
 	y = tree.getYArray();
 	for (i = 0; i < T.getNumV(); i++) {
 		for (it = T.getBegin(i); it != T.getEnd(i); it++) {
-			if (!(it->isArtificial())) {
+			if (!(it->isArtificial()) && !(it->isFake())) {
 				if ((y[i] + it->getCusto()) < y[it->getW()]) {
+					//cout <<"v: "<< it->getV()<< " w: " << it->getW() << " entrando" << '\n';
 					return *it;
 				}
 			}
@@ -152,10 +153,11 @@ int SimplexForNetworks::findCycle(int v, int w, Graph *T, int value) {
 		y = parent[y];
 
 	}
-
 	updateXArray(A, B, v, w, T, limitator, quebrouEmA, verticeLimitador);
 	T->removeArc(verticeLimitador, parent[verticeLimitador]);
-	T->insertArc(false, v, w, value);
+	T->insertA(false, v, w, value, 0, false);
+	T->insertA(true, w, v, value, 0, false);
+
 	return limitator;
 }
 
@@ -210,9 +212,31 @@ void SimplexForNetworks::updateXArray(list<int> A, list<int> B, int v, int w,
 		xArray[w] = limitator;
 	}
 }
+/*verifica se a solucao encontrada pela etapa de inicializacao
+ *serve para a segunda fase. Regra: caso nao existam arcos artificiais
+ *, ou se existirem arcos artificiais, o fluxo na aresta que liga
+ *, aquele arco a arvore deve ser 0*/
+
+bool SimplexForNetworks::verificaSeSolucaoFase1EValida(Graph T) {
+	int *x;
+	int i;
+	list<Arc>::iterator it;
+	i = 0;
+	x = T.getXArray();
+	for (i = 0; i < T.getNumV(); i++) {
+		for (it = T.getBegin(i); it != T.getEnd(i); it++) {
+			if (it->isArtificial()) {
+				if (x[it->getW()] > 0) {
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
 
 void SimplexForNetworks::imprimeArcosECustosOtimos(Graph G, Graph T) {
-	int i,custoTotal;
+	int i, custoTotal;
 	int *x;
 	list<Arc>::iterator it;
 	x = T.getXArray();
@@ -220,16 +244,16 @@ void SimplexForNetworks::imprimeArcosECustosOtimos(Graph G, Graph T) {
 	for (i = 0; i < G.getNumV(); i++) {
 		for (it = G.getBegin(i); it != G.getEnd(i); it++) {
 			if (T.existArc2(it->getV(), it->getW())) {
-				cout << it->getV() << " " << it->getW() << " "
-						<< x[it->getW()] << '\n';
-				custoTotal = custoTotal + it->getCusto()*x[it->getW()];
-			} else{
-				cout << it->getV() << " " << it->getW() << " " << 0 <<'\n';
+				cout << it->getV() << " " << it->getW() << " " << x[it->getW()]
+						<< '\n';
+				custoTotal = custoTotal + it->getCusto() * x[it->getW()];
+			} else {
+				cout << it->getV() << " " << it->getW() << " " << 0 << '\n';
 			}
 		}
 	}
-	cout << "custo deste caminho é: " << custoTotal<< '\n'<<
-			"este é o custo minimo para escoar um produto"<< '\n' <<
-			"do vertice: "<< G.getInitialVertex()<< '\n' <<
-			"para o vertice: "<< G.getFinishVertex()<<'\n';
+	cout << "custo deste caminho é: " << custoTotal << '\n'
+			<< "este é o custo minimo para escoar um produto" << '\n'
+			<< "do vertice: " << G.getInitialVertex() << '\n'
+			<< "para o vertice: " << G.getFinishVertex() << '\n';
 }

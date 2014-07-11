@@ -12,7 +12,6 @@ void printVector2(int *t, int size, string s) {
 	cout << "]" << '\n';
 }
 
-
 void printAuxArrays(Graph T) {
 	int *t = T.getXArray();
 	printVector2(t, T.getNumV(), "X");
@@ -28,7 +27,10 @@ void printAuxArrays(Graph T) {
 	//T.printArcDetails();
 }
 
-void NetworkSimplex(){
+/*realiza o metodo simplex para redes, no caso simplificado para escoar um produto
+ * de A para B*/
+
+void NetworkSimplex() {
 	InputReader input;
 	SimplexForNetworks simplex;
 
@@ -37,39 +39,42 @@ void NetworkSimplex(){
 	G = new Graph();
 	input.loadFile(G);
 
-	Graph T= G->montaEstruturaArvore();
+	Graph T = G->montaEstruturaArvore();
 	Graph H = G->clone();
-
 	T = simplex.Initialization(T);
+
 	T.graphDFS(T.getInitialVertex());
 	Arc c = simplex.findEnteringArc(T, H);
-
-    while (c.getV() >= 0) {
-		simplex.findCycle(c.getV(), c.getW(), &T, c.getCusto());
-		T.graphDFS(T.getInitialVertex());
-		c = simplex.findEnteringArc(T, H);
-	}
-
-	/*FIM DA PRIMEIRA FASE*/
-
-	T = simplex.InicializacaoFase2(*G, T);
-	T.graphDFS(T.getInitialVertex());
-	c = simplex.findEnteringArc(T, *G);
-
 
 	while (c.getV() >= 0) {
 		simplex.findCycle(c.getV(), c.getW(), &T, c.getCusto());
 		T.graphDFS(T.getInitialVertex());
+		c = simplex.findEnteringArc(T, H);
+	}
+	/*FIM DA PRIMEIRA FASE*/
+	if (!simplex.verificaSeSolucaoFase1EValida(T)) {
+		cout <<    "Não é possivel"
+				<< " encontrar uma solução inicial para inicialização da fase 2."
+				<< '\n';
+	} else {
+		T = simplex.InicializacaoFase2(*G, T);
+		T.graphDFS(T.getInitialVertex());
 		c = simplex.findEnteringArc(T, *G);
+
+		while (c.getV() >= 0) {
+			simplex.findCycle(c.getV(), c.getW(), &T, c.getCusto());
+			T.graphDFS(T.getInitialVertex());
+
+			c = simplex.findEnteringArc(T, *G);
+
+		}
+		simplex.imprimeArcosECustosOtimos(*G, T);
 	}
 
-	simplex.imprimeArcosECustosOtimos(*G,T);
 }
-
 
 int main() {
 	NetworkSimplex();
 	return 0;
 }
-
 
